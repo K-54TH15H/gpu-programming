@@ -1,0 +1,155 @@
+===================================== GOOGLE COLAB ========================================
+[]$ nvidia-smi
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |
+| N/A   52C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+[]$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+
+[]$ nvcc device_details.cu -o dd
+[]$ nvcc barrier.cu -o barrier
+
+[]$ ./dd
+No of devices found: 1
+
+=== DEVICE 0 Tesla T4 ===
+
+Concurrent Kernels: 1
+L2 Cache Size: 4194304 Bytes
+Max Blocks Per Multi-Processor: 16
+Max Grid Size: 0x7fff632b49e0
+Max Threads Dimension: 0x7fff632b49d4
+Max Threads Per Block: 1024
+Max Threads Per Multi-Processor: 1024
+Multi-Processor Count: 40
+Registers Per Block: 65536
+Registers Per Multi-Processor: 65536
+Reserved Shared Memory Per Block: 0
+Shared Memory Per Block: 49152 Bytes
+Shared Memory Per Multi-Processor: 65536 Bytes
+Total Constant Memory: 65536 Bytes
+Total Global Memory: 15637086208 Bytes
+Warp Size: 32
+Compute Capability: 7.5
+
+[]$ ./barrier
+Block 2 Waiting...
+Block 7 Waiting...
+Block 0 Waiting...
+Block 5 Waiting...
+Block 3 Waiting...
+Block 8 Waiting...
+Block 1 Waiting...
+Block 6 Waiting...
+Block 4 Waiting...
+Block 9 Waiting...
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+
+
+===================================== LOCAL RUN ========================================
+[]$ nvidia-smi
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4060 ...    Off |   00000000:01:00.0 Off |                  N/A |
+| N/A   42C    P0            590W /   80W |      57MiB /   8188MiB |     17%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             766      G   /usr/lib/Xorg                             4MiB |
+|    0   N/A  N/A             918    C+G   /usr/bin/kwin_wayland                     7MiB |
++-----------------------------------------------------------------------------------------+
+
+[]$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2026 NVIDIA Corporation
+Built on Tue_Jun_09_02:43:40_PM_PDT_2026
+Cuda compilation tools, release 13.3, V13.3.73
+Build cuda_13.3.r13.3/compiler.38244171_0
+
+[]$ nvcc device_details.cu -o dd
+[]$ nvcc barrier.cu -o barrier
+
+[]$ ./dd
+No of devices found: 1
+
+=== DEVICE 0 NVIDIA GeForce RTX 4060 Laptop GPU ===
+
+Concurrent Kernels: 1
+L2 Cache Size: 33554432 Bytes
+Max Blocks Per Multi-Processor: 24
+Max Grid Size: 0x7ffeca188cf0
+Max Threads Dimension: 0x7ffeca188ce4
+Max Threads Per Block: 1024
+Max Threads Per Multi-Processor: 1536
+Multi-Processor Count: 24
+Registers Per Block: 65536
+Registers Per Multi-Processor: 65536
+Reserved Shared Memory Per Block: 1024
+Shared Memory Per Block: 49152 Bytes
+Shared Memory Per Multi-Processor: 102400 Bytes
+Total Constant Memory: 65536 Bytes
+Total Global Memory: 8214937600 Bytes
+Warp Size: 32
+Compute Capability: 8.9
+
+[]$ ./barrier
+Block 5 Waiting...
+Block 2 Waiting...
+Block 8 Waiting...
+Block 4 Waiting...
+Block 1 Waiting...
+Block 7 Waiting...
+Block 3 Waiting...
+Block 9 Waiting...
+Block 0 Waiting...
+Block 6 Waiting...
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
+All Threads Synced
