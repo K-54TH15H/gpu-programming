@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INFINITY 1e9
+#define INF 1e9
 
 /*
  * Enumeration for types of error
@@ -112,7 +112,7 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
   }
 
   // edge list for the graph
-  graph->edge_list = malloc(sizeof(struct Edge) * graph->edges);
+  graph->edge_list = (struct Edge *)malloc(sizeof(struct Edge) * graph->edges);
 
   for (int i = 0; i < graph->edges; i++) {
     struct Edge edge;
@@ -138,17 +138,15 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
     return READ_ERROR;
   }
 
-  // undirected graph therefore edges are repeated
-  graph->csr = malloc(sizeof(struct Data) * graph->edges * 2);
-  graph->offset = malloc(sizeof(int) * graph->size);
-  graph->degree = malloc(sizeof(int) * graph->size);
-  graph->dist = malloc(sizeof(int) * graph->size);
+  // directed graph
+  graph->csr = (struct Data *)malloc(sizeof(struct Data) * graph->edges);
+  graph->offset = (int *)malloc(sizeof(int) * graph->size);
+  graph->degree = (int *)calloc(graph->size, sizeof(int));
+  graph->dist = (int *)malloc(sizeof(int) * graph->size);
 
-  // count degree of each vertex
-  for (int i = 0; i < graph->edges; i++) {
+  // count out degree of each vertex
+  for (int i = 0; i < graph->edges; i++)
     graph->degree[graph->edge_list[i].x]++;
-    graph->degree[graph->edge_list[i].y]++;
-  }
 
   int acc = 0; // accumulated offset
   // calculate offset for CSR representation
@@ -158,7 +156,7 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
   }
 
   // current offsets to write data on graph structure
-  int *current = malloc(sizeof(int) * graph->size);
+  int *current = (int *)malloc(sizeof(int) * graph->size);
   memcpy(current, graph->offset, sizeof(int) * graph->size);
 
   // write destination and weight of edge in CSR format
@@ -168,16 +166,14 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
     int wgt = graph->edge_list[i].c;
 
     struct Data fdata = {dest, wgt}; // forward edge
-    struct Data bdata = {src, wgt};  // backward edge
 
     graph->csr[current[src]++] = fdata;
-    graph->csr[current[dest]++] = bdata;
   }
 
   // set computed distance to be INFINITY macro (denoting no path) for all
   // vertices
   for (int i = 0; i < graph->size; i++)
-    graph->dist[i] = INFINITY;
+    graph->dist[i] = INF;
 
   // free up temporary memory
   free(current);
@@ -189,18 +185,27 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
  * Helper Function to find the SSSP from source vertex on graph
  * which is called in a loop to find the distance in an iterative manner
  */
-static void HSSSP(struct Graph *graph, int vertex) {
+static int HSSSP(struct Graph *graph, int vertex) {
+  // if vertex is not reached yet by source, then terminate expansion
+  if (graph->dist[vertex] == INF)
+    return 0;
+
+  int changed = 0; // counter for the no of changes
   int start = graph->offset[vertex];
-  int end = (vertex == graph->size - 1) ? graph->edges * 2
-                                        : graph->offset[vertex + 1];
+  int end =
+      (vertex == graph->size - 1) ? graph->edges : graph->offset[vertex + 1];
 
   for (int i = start; i < end; i++) {
     struct Data data = graph->csr[i];
-    int candid = graph->dist[data.dest] + data.wgt;
+    int candid = graph->dist[vertex] + data.wgt;
 
-    if (graph->dist[vertex] > candid)
-      graph->dist[vertex] = candid;
+    if (graph->dist[data.dest] > candid) {
+      graph->dist[data.dest] = candid;
+      changed++;
+    }
   }
+
+  return changed;
 }
 
 int main(int argc, char **argv) {
@@ -247,13 +252,17 @@ int main(int argc, char **argv) {
 
   // calculate the distance by SSSP algorithm
   for (int i = 0; i < (graph.size - 1); i++) {
+    int changed = 0;
     for (int v = 0; v < graph.size; v++)
-      HSSSP(&graph, v);
+      changed += HSSSP(&graph, v);
+    // early break out of loop
+    if (changed == 0)
+      break;
   }
 
   // print result
   for (int i = 0; i < graph.size; i++) {
-    if (graph.dist[i] != INFINITY)
+    if (graph.dist[i] != INF)
       printf("Destination: %d | Distance: %d\n", i, graph.dist[i]);
     else
       printf("Destination: %d | Distance: %s\n", i,
@@ -262,5 +271,9 @@ int main(int argc, char **argv) {
 
   // free up graph structures
   deleteGraph(&graph);
+
+  // close the file
+  fclose(graph_file);
+
   return SUCCESS;
 }
