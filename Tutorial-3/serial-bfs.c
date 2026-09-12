@@ -1,5 +1,5 @@
 /*
- * This code contains the logic and idea behind the SSSP algorithm with
+ * This code contains the logic and idea behind the BFS algorithm with
  * host-only code. This is written to help and model the gpu implementation of
  * the algorithm
  */
@@ -181,31 +181,30 @@ static enum Error readGraph(struct Graph *graph, FILE *graph_file) {
   return SUCCESS;
 }
 
-/*
- * Helper Function to find the SSSP from source vertex on graph
- * which is called in a loop to find the distance in an iterative manner
- */
-static int HSSSP(struct Graph *graph, int vertex) {
-  // if vertex is not reached yet by source, then terminate expansion
-  if (graph->dist[vertex] == INF)
-    return 0;
+static int HBFS(struct Graph *graph, int vertex, int level) {
+  if (graph->dist[vertex] == level) {
+    int changed =
+        0; // local conter for the no of changed with in this function call
 
-  int changed = 0; // counter for the no of changes
-  int start = graph->offset[vertex];
-  int end =
-      (vertex == graph->size - 1) ? graph->edges : graph->offset[vertex + 1];
+    // update all adjacents (u) from u.dist to level + 1 if level + 1 < u.dist
+    int start = graph->offset[vertex];
+    int end = (vertex == (graph->size - 1)) ? graph->edges
+                                            : graph->offset[vertex + 1];
 
-  for (int i = start; i < end; i++) {
-    struct Data data = graph->csr[i];
-    int candid = graph->dist[vertex] + data.wgt;
+    for (int i = start; i < end; i++) {
+      struct Data data = graph->csr[i];
 
-    if (graph->dist[data.dest] > candid) {
-      graph->dist[data.dest] = candid;
-      changed++;
+      if (graph->dist[data.dest] > level + 1) {
+        graph->dist[data.dest] = level + 1;
+        changed++;
+      }
     }
+
+    return changed;
   }
 
-  return changed;
+  // if not level then return 0 as no change is made
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -243,21 +242,27 @@ int main(int argc, char **argv) {
     return CLI_ERROR;
   }
 
-  printf("Serially Computing Single Source Shortest Path on host (SSSP) from "
+  printf("Serially Computing Single Source Shortest Path on host (BFS) from "
          "vertex [%d]\n",
          src);
 
   // set distance from src to src as zero as
   graph.dist[src] = 0;
+  int changed = 1; // indicator of whether bfs was successful
+  int level = 0;   // level indicator
 
-  // calculate the distance by SSSP algorithm
-  for (int i = 0; i < (graph.size - 1); i++) {
-    int changed = 0;
-    for (int v = 0; v < graph.size; v++)
-      changed += HSSSP(&graph, v);
-    // early break out of loop
-    if (changed == 0)
-      break;
+  // bfs loop
+  while (changed) {
+    changed = 0;
+
+    // this is the loop that needs to be parallelized
+    for (int v = 0; v < graph.size; v++) {
+      if (HBFS(&graph, v, level))
+        changed++;
+    }
+
+    // increase the level indicator
+    level++;
   }
 
   // print result
