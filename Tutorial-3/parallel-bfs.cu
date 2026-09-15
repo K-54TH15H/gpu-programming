@@ -271,7 +271,7 @@ static enum Error stageGraph(struct Graph *s_graph, struct Graph *h_graph) {
 
 int main(int argc, char **argv) {
   if (argc != 3) {
-    printError(CLI_ERROR, "Usage: parallel-device <filename> <source-vertex>");
+    printError(CLI_ERROR, "Usage: parallel-bfs <filename> <source-vertex>");
     return CLI_ERROR;
   }
 

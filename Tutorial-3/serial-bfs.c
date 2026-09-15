@@ -209,7 +209,7 @@ static int HBFS(struct Graph *graph, int vertex, int level) {
 
 int main(int argc, char **argv) {
   if (argc != 3) {
-    printError(CLI_ERROR, "Usage: serial-host <filename> <source-vertex>");
+    printError(CLI_ERROR, "Usage: serial-bfs <filename> <source-vertex>");
     return CLI_ERROR;
   }
 
