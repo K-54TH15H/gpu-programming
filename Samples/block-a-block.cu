@@ -9,7 +9,7 @@ __global__ void K() {
 		atomicAdd(&x, 1);
 	}
 	
-	while(atomicAdd(&x, 0) != 25);
+	while(atomicAdd(&x, 0) != 577);
 
 	if(threadIdx.x == 0)
 		printf("Escaped from spin wait! Block: %d\n", blockIdx.x);
@@ -18,8 +18,8 @@ __global__ void K() {
 }
 
 int main() {
-	int num_blocks = 25;
-	int num_threads = 1024;
+	int num_blocks = 577;
+	int num_threads = 32;
 	K<<<num_blocks, num_threads>>>();
 	cudaDeviceSynchronize();
 
