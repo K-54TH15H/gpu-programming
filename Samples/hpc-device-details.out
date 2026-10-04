@@ -1,0 +1,42 @@
+No of devices found: 2
+
+=== DEVICE 0 NVIDIA A30 ===
+
+Concurrent Kernels: 1
+L2 Cache Size: 25165824 Bytes
+Max Blocks Per Multi-Processor: 32
+Max Grid Size: 0x7ffe32173ab0
+Max Threads Dimension: 0x7ffe32173aa4
+Max Threads Per Block: 1024
+Max Threads Per Multi-Processor: 2048
+Multi-Processor Count: 56
+Registers Per Block: 65536
+Registers Per Multi-Processor: 65536
+Reserved Shared Memory Per Block: 1024
+Shared Memory Per Block: 49152 Bytes
+Shared Memory Per Multi-Processor: 167936 Bytes
+Total Constant Memory: 65536 Bytes
+Total Global Memory: 25413091328 Bytes
+Warp Size: 32
+Compute Capability: 8.0
+
+=== DEVICE 1 NVIDIA A30 ===
+
+Concurrent Kernels: 1
+L2 Cache Size: 25165824 Bytes
+Max Blocks Per Multi-Processor: 32
+Max Grid Size: 0x7ffe32173ab0
+Max Threads Dimension: 0x7ffe32173aa4
+Max Threads Per Block: 1024
+Max Threads Per Multi-Processor: 2048
+Multi-Processor Count: 56
+Registers Per Block: 65536
+Registers Per Multi-Processor: 65536
+Reserved Shared Memory Per Block: 1024
+Shared Memory Per Block: 49152 Bytes
+Shared Memory Per Multi-Processor: 167936 Bytes
+Total Constant Memory: 65536 Bytes
+Total Global Memory: 25413091328 Bytes
+Warp Size: 32
+Compute Capability: 8.0
+
